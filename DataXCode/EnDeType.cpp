@@ -368,17 +368,17 @@ bool SerialNumber::IsPositive() const
 	switch( nDataType )
 	{
 	case FdDefinition::RAWT_UINT64:
-		return nUInt64 >= 0;
+		return true;
 	case FdDefinition::RAWT_INT64:
 		return nInt64 >= 0;
 	case FdDefinition::RAWT_UINT32:
-		return nUInt32 >= 0;
+		return true;
 	case FdDefinition::RAWT_DATE:
 	case FdDefinition::RAWT_TIME:
 	case FdDefinition::RAWT_INT32:
 		return nInt32 >= 0;
 	case FdDefinition::RAWT_UINT16:
-		return nUInt16 >= 0;
+		return true;
 	case FdDefinition::RAWT_INT16:
 		return nInt16 >= 0;
 	default:

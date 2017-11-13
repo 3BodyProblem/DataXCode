@@ -60,6 +60,11 @@ public:
 	int	operator << ( const SerialNumber& val );
 
 private:
+	inline int	inner_encodeUInt64( const unsigned __int64 val );
+	inline int	inner_gt0_encodeint64( unsigned char * buf, __int64 val64 );	
+	inline int	inner_lt0_encodeint64( unsigned char * buf, __int64 val64 );
+
+private:
 	char					m_pszDataBuf[MAX_DATABLOCK_SIZE];	///< 对一次encode，所使用的message的差值缓存
 	unsigned int			m_nDataBufSize;						///< m_pszDataBuf的有效数据长度
 	unsigned char*			m_buf;								///< 缓存
@@ -104,6 +109,16 @@ public:
 	 * @return			读出序列化的bit数
 	 */
 	int operator >> ( SerialNumber& val );
+
+private:
+	/**
+	 * @brief		按照Stop bit 规则获取字符序列
+	 * @return		size, <0 表示出错
+					>0,		读出的反序列化缓存中的bit数据
+	 */
+	inline int	DecodeBytes( unsigned char* buf, char* b, int size );
+	inline int	inner_decodeInt64( __int64 &val );
+	inline int	inner_decodeUInt64( unsigned __int64 &val );
 
 private:
 	char					m_pszDataBuf[MAX_DATABLOCK_SIZE];	///< 对一次encode，所使用的message的差值缓存
