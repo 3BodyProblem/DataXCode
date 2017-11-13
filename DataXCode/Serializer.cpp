@@ -5,24 +5,12 @@
 
 FrameSerializer::FrameSerializer()
 : m_buf( NULL ), m_buflen( 0 ), m_curpos( 0 )
-, m_nDataBufSize( 0 )
 {
 }
 
 int	FrameSerializer::GetDataSize()
 {
 	return m_curpos;
-}
-
-bool FrameSerializer::NewMessage()
-{
-	m_nDataBufSize = 0;
-	if( NULL == m_buf )
-	{
-		return false;
-	}
-
-	return true;
 }
 
 void FrameSerializer::Attach( unsigned char *ptr, size_t size )

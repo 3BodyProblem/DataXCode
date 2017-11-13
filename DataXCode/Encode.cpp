@@ -136,9 +136,8 @@ int Encode::EncodeMessage( unsigned short nMsgID, const char *pData, unsigned in
 
 	if( NULL != pMsg )
 	{
-		m_oSerializer.NewMessage();
-
-		for( unsigned int n = 0; n < pMsg->GetFieldNum(); n++ )
+		unsigned int	nCount = pMsg->GetFieldNum();
+		for( unsigned int n = 0; n < nCount; n++ )
 		{
 			MsgField	*pField = (*pMsg)[n];
 			if( NULL == pField )

@@ -37,11 +37,6 @@ public:
 	void Attach( unsigned char *ptr, size_t size );
 
 	/**
-	 * @brief			赋值MessageID,且清空buffer的长度计数
-	 */
-	bool NewMessage();
-
-	/**
 	 * @brief			序列化一个bytes数组
 	 * @return			写入序列化bit数
 	 */
@@ -65,8 +60,6 @@ private:
 	inline int	inner_lt0_encodeint64( unsigned char * buf, __int64 val64 );
 
 private:
-	char					m_pszDataBuf[MAX_DATABLOCK_SIZE];	///< 对一次encode，所使用的message的差值缓存
-	unsigned int			m_nDataBufSize;						///< m_pszDataBuf的有效数据长度
 	unsigned char*			m_buf;								///< 缓存
 	size_t					m_buflen;							///< 缓存总长度
 	size_t					m_curpos;							///< 待写入位置

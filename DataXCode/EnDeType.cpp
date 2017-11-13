@@ -229,7 +229,7 @@ SerialNumber::SerialNumber( __int64 nVal, MsgField* pMFd )
 
 bool SerialNumber::IsSigned() const
 {
-	if( nDataType < FdDefinition::RAWT_UINT8 )
+	if( nDataType < FdDefinition::RAWT_UINT8 || nDataType == FdDefinition::RAWT_DOUBLE )
 	{
 		return true;
 	}

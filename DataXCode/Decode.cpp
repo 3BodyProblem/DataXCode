@@ -136,13 +136,14 @@ int Decode::OnDecodeField( MsgField& rField, char *pData, unsigned int nLen )
 
 int Decode::DecodeMessage( unsigned short nMsgID, char *pData, unsigned int nLen )
 {	// { INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32, UINT64, STRING, DOUBLE, SEQUENCE }
-	int				nError = -1;
-	int				nOffset = 0;
-	Message			*pMsg = m_oMsgPolicy[nMsgID];
+	int					nError = -1;
+	int					nOffset = 0;
+	Message				*pMsg = m_oMsgPolicy[nMsgID];
 
 	if( NULL != pMsg )
 	{
-		for( unsigned int n = 0; n < pMsg->GetFieldNum(); n++ )
+		unsigned int	nCount = pMsg->GetFieldNum();
+		for( unsigned int n = 0; n < nCount; n++ )
 		{
 			MsgField	*pField = (*pMsg)[n];
 

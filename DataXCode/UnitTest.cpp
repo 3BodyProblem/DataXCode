@@ -235,7 +235,7 @@ TEST_F( TestDemoSnap, Single )
 	unsigned short		nMsgID = 0;
 	tagDemoSnapType		snap = { 0 };
 	ASSERT_LT( 0, g_pEncoder->EncodeMessage( 13, (char*)&m_lstTagSecurity[0], sizeof(snap) ) );
-	g_pDecoder->DecodeMessage( nMsgID, (char*)&snap, sizeof(snap) );
+	g_pDecoder->DecodeMessage( 13, (char*)&snap, sizeof(snap) );
 	ASSERT_EQ( 0, ::memcmp( &snap, &m_lstTagSecurity[0], sizeof(snap) ) );
 }
 
