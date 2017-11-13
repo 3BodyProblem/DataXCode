@@ -4,10 +4,10 @@
 
 	@usage
 		运行内置测试数据
-		X.RunAllDemoTest_Encode( "./QLXDemoTemplate.xml", "*Demo*" )
+		X.RunAllDemoTest_Encode( "./DemoTemplate.xml", "*Demo*" )
 
 		运行外部导入的上海Level2数据
-		X.RunAllDemoTest_Encode( "./QLXDemoTemplate.xml", "*SHL2*", "./template.2.13.xml", "./fastdata" )
+		X.RunAllDemoTest_Encode( "./DemoTemplate.xml", "*SHL2*", "./template.2.13.xml", "./fastdata" )
 """
 
 
@@ -16,12 +16,12 @@
 ######################################################
 
 
-import QLXEnDeCode as X
+import DataXCode as X
 
 
 if __name__ == '__main__':
 	try:
-		X.RunAllDemoTest_Encode( "./QLXDemoTemplate.xml", "*SHL2*", "./template.2.13.xml", "./fastdata" )
+		X.RunAllDemoTest_Encode( "./DemoTemplate.xml", "*Demo*" )
 		print( '[Mission Complete!]--------------------------------' )
 	except Exception as e:
 		print( e )
