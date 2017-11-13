@@ -243,7 +243,7 @@ TEST_F( TestDemoSnap, Loop )
 {
 	unsigned __int64	nSizeCnt = 0;
 
-	for( int i = 0; i < 1024; i++ )
+	for( int i = 0; i < 1024*8; i++ )
 	{
 		SetUp();
 
