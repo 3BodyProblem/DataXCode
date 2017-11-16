@@ -78,7 +78,28 @@ public:
 };
 
 
+/**
+ * @brief						版本获取导出函数定义
+ */
+typedef char*					(__stdcall *T_Func_FetchModuleVersion)();
+
+/**
+ * @brief						编码导出函数定义
+ */
+typedef InterfaceEncode*		(__stdcall *T_Func_GetEncodeApi)();
+
+/**
+ * @brief						解码导出函数定义
+ */
+typedef InterfaceDecode*		(__stdcall *T_Func_GetDecodeApi)();
+
+
+
+
+
 #endif
+
+
 
 
 
