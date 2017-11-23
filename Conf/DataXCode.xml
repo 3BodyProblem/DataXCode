@@ -20,13 +20,13 @@
 		</sequence>
 	</message>
 	<message name="tagSHL1MarketStatus_HF151" id="151">
-		<string name="Key" len="20" counterpart="Key"/>
+		<string name="Key" len="20"/>
 		<uint32 name="MarketTime" counterpart="MarketTime">-</uint32>
 		<uint8 name="MarketStatus"/>
 	</message>
 	<message name="tagSHL1ReferenceData_LF152" id="152">
 		<string name="Code" len="20" counterpart="Code">-</string>
-		<string name="Name"/>
+		<string name="Name" len="64"/>
 		<uint16 name="Kind"/>
 	</message>
 	<message name="tagSHL1ReferenceExtension_LF153" id="153">
@@ -78,7 +78,7 @@
 	</message>
 	<message name="tagDLFutureKindDetail_LF101" id="101">
 		<string name="Key" len="20"/>
-		<string name="KindName"/>
+		<string name="KindName" len="64"/>
 		<uint32 name="PriceRate"/>
 		<uint32 name="LotSize"/>
 		<uint32 name="LotFactor"/>
@@ -93,12 +93,12 @@
 		</sequence>
 	</message>
 	<message name="tagDLFutureMarketStatus_HF102" id="102">
-		<string name="Key" len="20" counterpart="Key"/>
+		<string name="Key" len="20"/>
 		<uint32 name="MarketTime" counterpart="MarketTime">-</uint32>
 		<uint8 name="MarketStatus"/>
 	</message>
 	<message name="tagDLFutureReferenceData_LF103" id="103">
-		<string name="Code" len="20" counterpart="Code">-</string>
+		<string name="Code" len="20"/>
 		<string name="Name" len="64"/>
 		<uint32 name="Kind"/>
 		<int8 name="CallOrPut"/>
@@ -109,7 +109,7 @@
 		<uint32 name="ExpireDate"/>
 	</message>
 	<message name="tagDLFutureSnapData_LF104" id="104">
-		<string name="Code" len="20" counterpart="Code">-</string>
+		<string name="Code" len="20"/>
 		<uint32 name="Open"/>
 		<uint32 name="Close" correlate="Open">-</uint32>
 		<uint32 name="PreClose" correlate="Open">-</uint32>
@@ -120,7 +120,7 @@
 		<uint64 name="PreOpenInterest"/>
 	</message>
 	<message name="tagDLFutureSnapData_HF105" id="105">
-		<string name="Code" len="20" counterpart="Code">-</string>
+		<string name="Code" len="20"/>
 		<uint32 name="Now"/>
 		<uint32 name="High" correlate="Now">-</uint32>
 		<uint32 name="Low" correlate="Now">-</uint32>
@@ -129,7 +129,7 @@
 		<uint64 name="Position"/>
 	</message>
 	<message name="tagDLFutureSnapBuySell_HF106" id="106">
-		<string name="Code" len="20" counterpart="Code">-</string>
+		<string name="Code" len="20"/>
 		<sequence name="Buy" len="5">
 			<uint32 name="Price" correlate="Price">-</uint32>
 			<uint64 name="Volume"/>

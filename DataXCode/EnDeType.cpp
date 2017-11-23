@@ -133,7 +133,7 @@ SerialNumber::SerialNumber( __int64 nVal, MsgField* pMFd )
 {
 	bool	bMarkSign = false;
 
-	switch( pMFd->EncodeRuleDefinition().Operation() )
+	switch( pMFd->EncodeRuleDefinition().Relation() )
 	{
 	case EncodePolicyDefinition::CORRELATE:
 		{

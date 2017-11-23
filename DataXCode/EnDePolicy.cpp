@@ -294,25 +294,37 @@ int MsgField::AddAndReturnRefCnt()
 
 SerialString MsgField::X_CompressString( const char* pData, size_t nDataLen )
 {
-	switch( m_policyDefinition.Operation() )
+	switch( m_policyDefinition.Relation() )
 	{
 	case EncodePolicyDefinition::INDEPENDENCE:
-		return SerialString( nDataLen, (char*)pData, nDataLen );
+		return SerialString( nDataLen, (char*)pData, ::strlen(pData) );
 	case EncodePolicyDefinition::COUNTERPART:
 		{
-			if( 0 == AddAndReturnRefCnt() )///< 基值不存在的情况（即Frame中的第一个包）
+			if( 0 == AddAndReturnRefCnt() )							///< 基值不存在的情况（即Frame中的第一个包）
 			{
-				::memcpy( m_oLastString, pData, sizeof(m_oLastString)<nDataLen?sizeof(m_oLastString):nDataLen );
-				return SerialString( nDataLen, m_oLastString, nDataLen );
+				unsigned int	nStrLen = ::strlen(pData);			///< 获取全长
+
+				nStrLen = (nDataLen < nStrLen)?nDataLen:nStrLen;
+				m_oLastString[0] = nStrLen;							///< 基值需要全长字符串
+				::memcpy( m_oLastString+1, pData, sizeof(m_oLastString)<nStrLen?sizeof(m_oLastString):nStrLen );
+				m_oLastString[1+nStrLen] = '\0';
+
+				return SerialString( nDataLen, m_oLastString + 1, nStrLen );
 			}
-			else								///< 基值存在，有作差值的条件
+			else													///< 基值存在，有作差值的条件
 			{
-				for( unsigned int n = 0; n < nDataLen; n++ )
+				unsigned int	nStrTotalLen = m_oLastString[0];
+				for( unsigned int n = 0; n < nStrTotalLen; n++ )
 				{
-					if( *(pData+n) != m_oLastString[n] )
+					if( *(pData+n) != m_oLastString[n+1] )
 					{
-						::memcpy( m_oLastString, pData, sizeof(m_oLastString)<nDataLen?sizeof(m_oLastString):nDataLen );
-						return SerialString( nDataLen, (char*)pData + n, nDataLen - n );
+						unsigned int	nStrLen = ::strlen(pData);	///< 获取全长
+
+						nStrLen = (nDataLen < nStrLen)?nDataLen:nStrLen;
+						m_oLastString[0] = nStrLen;					///< 基值需要全长字符串
+						::memcpy( m_oLastString+1, pData, sizeof(m_oLastString)<nStrLen?sizeof(m_oLastString):nStrLen );
+
+						return SerialString( nDataLen, (char*)pData + n, nStrLen - n );
 					}
 				}
 			}
@@ -322,13 +334,14 @@ SerialString MsgField::X_CompressString( const char* pData, size_t nDataLen )
 		{
 			if( NULL != m_policyDefinition.RelatedField() )
 			{
-				char*	pszLastString = m_policyDefinition.RelatedField()->GetLastString();
+				char*			pszLastString = m_policyDefinition.RelatedField()->GetLastString();
+				unsigned int	nStrLen = ::strlen(pszLastString);
 
-				for( unsigned int n = 0; n < nDataLen; n++ )
+				for( unsigned int n = 0; n < nStrLen; n++ )
 				{
-					if( *(pData+n) != pszLastString[n] )
+					if( *(pData+n) != pszLastString[n+1] )
 					{
-						return SerialString( nDataLen, (char*)pData + n, nDataLen - n );
+						return SerialString( nDataLen, (char*)pData + n, nStrLen - n );
 					}
 				}
 			}
@@ -341,7 +354,7 @@ SerialString MsgField::X_CompressString( const char* pData, size_t nDataLen )
 
 SerialNumber MsgField::X_CompressNumber( const char* pData )
 {
-	switch( m_policyDefinition.Operation() )
+	switch( m_policyDefinition.Relation() )
 	{
 	case EncodePolicyDefinition::INDEPENDENCE:
 		{
@@ -385,7 +398,7 @@ SerialNumber MsgField::X_CompressNumber( const char* pData )
 
 int MsgField::X_UnCompressNumber( SerialNumber& oNumber, char* pData, size_t nDataLen )
 {
-	switch( m_policyDefinition.Operation() )
+	switch( m_policyDefinition.Relation() )
 	{
 	case EncodePolicyDefinition::INDEPENDENCE:
 		{
@@ -439,21 +452,25 @@ int MsgField::X_UnCompressString( SerialString& oString, char* pData, size_t nDa
 		{
 			if( 0 == AddAndReturnRefCnt() )		///< 基值不存在的情况（即Frame中的第一个包）
 			{
-				::memcpy( m_oLastString, oString.pszStr, sizeof(m_oLastString)<nDataLen?sizeof(m_oLastString):nDataLen );
-				m_oLastString[nDataLen] = '\0';
+				unsigned int	nStrLen = ::strlen(oString.pszStr);
+				m_oLastString[0] = nStrLen;
+				::memcpy( m_oLastString + 1, oString.pszStr, sizeof(m_oLastString)<nStrLen?sizeof(m_oLastString):nStrLen );
+				m_oLastString[nStrLen+1] = '\0';
 				return 0;
 			}
 			else								///< 基值存在，有作差值的条件
 			{
 				if( 0 == oString.nStrLen )
 				{
-					::strcpy( pData, m_oLastString );
+					::strcpy( pData, m_oLastString + 1 );
 				}
 				else
 				{
-					::strncpy( m_oLastString + (nDataLen-oString.nStrLen), oString.pszStr, oString.nStrLen );
-					m_oLastString[nDataLen] = '\0';
-					::strcpy( pData, m_oLastString );
+					unsigned int	nStrTotalLen = m_oLastString[0];
+
+					::strncpy( m_oLastString + 1 + (nStrTotalLen-oString.nStrLen), oString.pszStr, oString.nStrLen );
+					m_oLastString[nStrTotalLen + 1] = '\0';
+					::strcpy( pData, m_oLastString + 1 );
 				}
 
 				return 0;
@@ -464,17 +481,19 @@ int MsgField::X_UnCompressString( SerialString& oString, char* pData, size_t nDa
 		{
 			if( NULL != m_policyDefinition.RelatedField() )
 			{
-				char*	pszLastString = m_policyDefinition.RelatedField()->GetLastString();
+				char*			pszLastString = m_policyDefinition.RelatedField()->GetLastString();
 
 				if( 0 == oString.nStrLen )
 				{
-					::strcpy( pData, pszLastString );
+					::strcpy( pData, pszLastString + 1 );
 				}
 				else
 				{
-					::strncpy( pszLastString + (nDataLen-oString.nStrLen), oString.pszStr, oString.nStrLen );
-					pszLastString[nDataLen] = '\0';
-					::strcpy( pData, pszLastString );
+					unsigned int	nStrTotalLen = m_oLastString[0];
+
+					::strncpy( pszLastString + 1 + (nStrTotalLen-oString.nStrLen), oString.pszStr, oString.nStrLen );
+					pszLastString[nStrTotalLen] = '\0';
+					::strcpy( pData, pszLastString + 1 );
 				}
 
 				return 0;

@@ -27,36 +27,11 @@ FrameSerializer::operator char*()
 
 int FrameSerializer::operator << ( const SerialString& val )
 {
-	int nbit = 0;
+	m_buf[m_curpos++] = val.nStrLen;
+	::memcpy( m_buf + m_curpos, val.pszStr, val.nStrLen );
+	m_curpos += val.nStrLen;
 
-	if( m_curpos + val.nStrLen >= m_buflen )
-	{
-		return 0;
-	}
-
-	if( val.nStrLen <= 0 )
-	{
-		nbit = 1;
-
-		if (m_curpos>= m_buflen)
-		{
-			return -1;
-		}
-
-		m_buf[m_curpos++] = 0x80;
-	}
-
-	//最后一字节高位有stop bit
-	if (nbit <=0 && val.nStrLen >0) //还未赋值
-	{
-		memcpy( &m_buf[m_curpos], val.pszStr, val.nStrLen );
-		m_curpos += val.nStrLen;
-
-		m_buf[m_curpos-1] |= 0x80;///<last()
-		nbit = val.nStrLen;
-	}
-	
-	return nbit;
+	return val.nStrLen + 1;
 }
 
 int FrameSerializer::operator << ( const SerialBytes& val )
@@ -505,33 +480,13 @@ int FrameUnserializer::operator >> ( SerialBytes& val )
 
 int FrameUnserializer::operator >> ( SerialString& val )
 {
-	if( m_curpos >= m_buflen )
-	{
-		return 0;
-	}
+	unsigned int			nDataLen = m_buf[m_curpos];
 
-	int size = DecodeBytes( m_buf + m_curpos, val.pszStr, val.nStrLen );
+	::memcpy( val.pszStr, m_buf + m_curpos + 1, nDataLen );
+	val.nStrLen = nDataLen;
+	m_curpos += (nDataLen+1);
 
-	if( size > 0 )
-	{
-		if( size < val.nStrLen ) // 保护边界
-		{
-			*(val.pszStr + size) = '\0';
-		}
-
-		m_curpos += size;
-
-		if( val.pszStr[0] == '\0' )
-		{
-			val.nStrLen = 0;
-		}
-		else
-		{
-			val.nStrLen = size;
-		}
-	}
-
-	return size;
+	return (nDataLen + 1);
 }
 
 int	FrameUnserializer::DecodeBytes( unsigned char* buf, char* b,int size )

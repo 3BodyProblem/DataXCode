@@ -33,7 +33,7 @@ void TestDemoMarketInfo::SetUpTestCase()
 	for( int n = 0; n < MAX_MARKET_NUM; n++ )
 	{
 		m_lstTagStatus[n].Status = n % 2;
-		m_lstTagStatus[n].Date = 20181212;
+		m_lstTagStatus[n].Date = 20181212 + 2*n;
 		m_lstTagStatus[n].Time = 150102 + n;
 	}
 }
@@ -63,9 +63,26 @@ void TestDemoStatic::SetUpTestCase()
 		char		pszCode[7] = { 0 };
 
 		m_lstTagName[n].Type = (n % 10) + 1;
-		::sprintf( pszCode, "%u", 600001 + n );
-		::memcpy( m_lstTagName[n].Code, pszCode, 6 );
-		::strncpy( m_lstTagName[n].Name, "abcdefg", 8/*"深A发展", sizeof("深A发展")*/ );
+
+		if( n < 5 )
+		{
+			::sprintf( pszCode, "%u", 600001 + n );
+			::memcpy( m_lstTagName[n].Code, pszCode, 6 );
+		}
+		else
+		{
+			::sprintf( pszCode, "a%u", 9000 + n );
+			::memcpy( m_lstTagName[n].Code, pszCode, 5 );
+		}
+
+//		if( n % 2 == 0 )
+		{
+			::strncpy( m_lstTagName[n].Name, "abcdefg", 8/*"深A发展", sizeof("深A发展")*/ );
+		}
+/*		else
+		{
+			::strncpy( m_lstTagName[n].Name, "深发展", 6 );
+		}*/
 	}
 }
 
@@ -95,15 +112,23 @@ void TestDemoSnap::SetUpTestCase()
 		tagDemoSnapType		&snap = m_lstTagSecurity[n];
 		unsigned int		nBasePrice = 102400 + n * 500;
 
-		::sprintf( pszCode, "%u", 600001 + n );
-		::memcpy( snap.Code, pszCode, 6 );
+		if( n < 5 )
+		{
+			::sprintf( pszCode, "%u", 600001 + n );
+			::memcpy( snap.Code, pszCode, 6 );
+		}
+		else
+		{
+			::sprintf( pszCode, "a%u", 9000 + n );
+			::memcpy( snap.Code, pszCode, 5 );
+		}
 		snap.Now = nBasePrice;
 		snap.High = nBasePrice + 500;
 		snap.Low = nBasePrice - 500;
 		snap.Open = nBasePrice - 10;
 		snap.Close = nBasePrice + 20;
 		snap.Voip = nBasePrice - 1000;
-		snap.Amount = (nBasePrice * 128) + 0.123;
+		snap.Amount = 27658179.399;//999999 + ((n * 128) + (0.123 * n));
 		snap.Volume = nBasePrice * 300;
 		snap.Records = 1000;
 
@@ -212,7 +237,11 @@ TEST_F( TestDemoStatic, Loop )
 	ASSERT_LT( 0, g_pEncoder->EncodeMessage( 10, (char*)&m_lstTagName[2], sizeof(tagDemoStaticType) ) );
 	ASSERT_LT( 0, g_pEncoder->EncodeMessage( 10, (char*)&m_lstTagName[2], sizeof(tagDemoStaticType) ) );
 	ASSERT_LT( 0, g_pEncoder->EncodeMessage( 10, (char*)&m_lstTagName[1], sizeof(tagDemoStaticType) ) );
-	int	nBufSize = g_pEncoder->EncodeMessage( 10, (char*)&m_lstTagName[0], sizeof(tagDemoStaticType) );
+	ASSERT_LT( 0, g_pEncoder->EncodeMessage( 10, (char*)&m_lstTagName[0], sizeof(tagDemoStaticType) ) );
+
+	ASSERT_LT( 0, g_pEncoder->EncodeMessage( 10, (char*)&m_lstTagName[5], sizeof(tagDemoStaticType) ) );
+	ASSERT_LT( 0, g_pEncoder->EncodeMessage( 10, (char*)&m_lstTagName[6], sizeof(tagDemoStaticType) ) );
+	int	nBufSize = g_pEncoder->EncodeMessage( 10, (char*)&m_lstTagName[7], sizeof(tagDemoStaticType) );
 	ASSERT_LT( 0, nBufSize );
 
 	ASSERT_EQ( 0, g_pDecoder->Attach2Buffer( g_pGlobalBuffer, nBufSize ) );
@@ -226,8 +255,16 @@ TEST_F( TestDemoStatic, Loop )
 	ASSERT_EQ( 0, ::memcmp( &value, &m_lstTagName[2], sizeof(value) ) );
 	ASSERT_NE( 0, g_pDecoder->DecodeMessage( 10, (char*)&value, sizeof(value) ) );
 	ASSERT_EQ( 0, ::memcmp( &value, &m_lstTagName[1], sizeof(value) ) );
-	ASSERT_EQ( 0, g_pDecoder->DecodeMessage( 10, (char*)&value, sizeof(value) ) );
+	ASSERT_NE( 0, g_pDecoder->DecodeMessage( 10, (char*)&value, sizeof(value) ) );
 	ASSERT_EQ( 0, ::memcmp( &value, &m_lstTagName[0], sizeof(value) ) );
+
+	::memset( &value, 0, sizeof(value) );
+	ASSERT_NE( 0, g_pDecoder->DecodeMessage( 10, (char*)&value, sizeof(value) ) );
+	ASSERT_EQ( 0, ::memcmp( &value, &m_lstTagName[5], sizeof(value) ) );
+	ASSERT_NE( 0, g_pDecoder->DecodeMessage( 10, (char*)&value, sizeof(value) ) );
+	ASSERT_EQ( 0, ::memcmp( &value, &m_lstTagName[6], sizeof(value) ) );
+	ASSERT_EQ( 0, g_pDecoder->DecodeMessage( 10, (char*)&value, sizeof(value) ) );
+	ASSERT_EQ( 0, ::memcmp( &value, &m_lstTagName[7], sizeof(value) ) );
 }
 
 TEST_F( TestDemoSnap, Single )
